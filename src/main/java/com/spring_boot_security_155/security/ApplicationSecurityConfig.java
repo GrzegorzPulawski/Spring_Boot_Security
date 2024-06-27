@@ -61,33 +61,33 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
         ;
     }
 
-    @Override
-    @Bean
-    protected UserDetailsService userDetailsService() {
-        UserDetails student = User.builder()
-                .username("student")
-                .password(passwordEncoder.encode( "123456"))
-                .roles(STUDENT.name())
-                .authorities(STUDENT.getGrantedAuthorities())
-                .build();
-        UserDetails old = User.builder()
-                .username("old")
-                .password(passwordEncoder.encode( "123456"))
-//                .roles(OLD_STUDENT.name())
-                .authorities(OLD_STUDENT.getGrantedAuthorities())
-                .build();
-        UserDetails admin = User.builder()
-                .username("admin")
-                .password(passwordEncoder.encode( "123456"))
-//                .roles(ADMIN.name())
-                .authorities(ADMIN.getGrantedAuthorities())
-                .build();
-        UserDetails verb = User.builder()
-                .username("verb")
-                .password(passwordEncoder.encode( "123456"))
-//                .roles(ADMIN.name())
-                .authorities(HTTP_VERBS.getGrantedAuthorities())
-                .build();
-        return new InMemoryUserDetailsManager(admin, student, old, verb);
-    }
+//    @Override
+//    @Bean
+//    protected UserDetailsService userDetailsService() {
+//        UserDetails student = User.builder()
+//                .username("student")
+//                .password(passwordEncoder.encode( "123456"))
+//                .roles(STUDENT.name())
+//                .authorities(STUDENT.getGrantedAuthorities())
+//                .build();
+//        UserDetails old = User.builder()
+//                .username("old")
+//                .password(passwordEncoder.encode( "123456"))
+////                .roles(OLD_STUDENT.name())
+//                .authorities(OLD_STUDENT.getGrantedAuthorities())
+//                .build();
+//        UserDetails admin = User.builder()
+//                .username("admin")
+//                .password(passwordEncoder.encode( "123456"))
+////                .roles(ADMIN.name())
+//                .authorities(ADMIN.getGrantedAuthorities())
+//                .build();
+//        UserDetails verb = User.builder()
+//                .username("verb")
+//                .password(passwordEncoder.encode( "123456"))
+////                .roles(ADMIN.name())
+//                .authorities(HTTP_VERBS.getGrantedAuthorities())
+//                .build();
+//        return new InMemoryUserDetailsManager(admin, student, old, verb);
+//    }
 }
