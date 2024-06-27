@@ -35,7 +35,18 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest() //każde żadanie
                 .authenticated() // musi przejść autentykację (login i hasło)
                 .and()
-                .httpBasic(); // używanie podstawowej autnetykacji czyli mechanizmu BasicAuth
+//                .httpBasic(); // używanie podstawowej autnetykacji czyli mechanizmu BasicAuth
+                .formLogin()
+                    .loginPage("/login")
+                    .passwordParameter("password2")
+                    .usernameParameter("username2")
+                    .defaultSuccessUrl("/management/api/v1/students", true)
+                    .permitAll()
+                .and()
+                .rememberMe()
+
+
+        ;
     }
 
     @Override
