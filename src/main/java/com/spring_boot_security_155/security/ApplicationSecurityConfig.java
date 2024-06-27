@@ -9,7 +9,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
@@ -29,6 +28,7 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .csrf().disable()
                 .authorizeRequests() //każde zadania musi być autoryzowane (prawa dostępu do zasobu)
                 .antMatchers("/", "index.html").permitAll() // co ma być widoczne bez logowania (biała lista)
                 .antMatchers("/api/**").hasRole(STUDENT.name())
@@ -45,16 +45,19 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 .username("student")
                 .password(passwordEncoder.encode( "123456"))
                 .roles(STUDENT.name())
+                .authorities(STUDENT.getGrantedAuthorities())
                 .build();
         UserDetails old = User.builder()
                 .username("old")
                 .password(passwordEncoder.encode( "123456"))
-                .roles(OLD_STUDENT.name())
+//                .roles(OLD_STUDENT.name())
+                .authorities(OLD_STUDENT.getGrantedAuthorities())
                 .build();
         UserDetails admin = User.builder()
                 .username("admin")
                 .password(passwordEncoder.encode( "123456"))
-                .roles(ADMIN.name())
+//                .roles(ADMIN.name())
+                .authorities(ADMIN.getGrantedAuthorities())
                 .build();
         return new InMemoryUserDetailsManager(admin, student, old);
     }

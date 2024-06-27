@@ -1,16 +1,18 @@
 package com.spring_boot_security_155.controller;
 
+import com.google.common.collect.Lists;
 import com.spring_boot_security_155.model.Student;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 @RestController
 @RequestMapping("/management/api/v1/students")
 public class StudentManagementController {
-    private static final List<Student> STUDENTS = Arrays.asList(
+    private List<Student> students = Lists.newArrayList(
             new Student(1, "Olivier Bond"),
             new Student(2, "Paweł Bond"),
             new Student(3, "Grzegorz Bond")
@@ -25,14 +27,27 @@ public class StudentManagementController {
     @GetMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<Student> getAllStudents() {
-        return STUDENTS;
+        return students;
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void registerNewStudent(Student student) {
-        STUDENTS.add(student);
-        System.out.println("registerNewStudent: " + student);
+    @PreAuthorize("hasAuthority('students:write')")
+    public String registerNewStudent(@RequestBody Student student) {
+        students.add(student);
+        return "registerNewStudent: " + student;
     }
 
+    @DeleteMapping()
+    @PreAuthorize("hasAuthority('students:write')")
+    public Student deleteStudent(@RequestBody Student student) {
+        students.remove(student);
+        return student;
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('students:write')")
+    public Student updateStudent(@PathVariable int id,
+                                 @RequestBody Student student) {
+        return student;
+    }
 }
