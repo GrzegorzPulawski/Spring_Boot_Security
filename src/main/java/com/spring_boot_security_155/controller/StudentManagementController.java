@@ -2,10 +2,7 @@ package com.spring_boot_security_155.controller;
 
 import com.spring_boot_security_155.model.Student;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,6 +26,13 @@ public class StudentManagementController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<Student> getAllStudents() {
         return STUDENTS;
+    }
+
+    @PostMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public void registerNewStudent(Student student) {
+        STUDENTS.add(student);
+        System.out.println("registerNewStudent: " + student);
     }
 
 }
