@@ -31,21 +31,21 @@ public class StudentManagementController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('students:write')")
+    @PreAuthorize("hasAuthority('students:post')")
     public String registerNewStudent(@RequestBody Student student) {
         students.add(student);
         return "registerNewStudent: " + student;
     }
 
     @DeleteMapping()
-    @PreAuthorize("hasAuthority('students:write')")
+    @PreAuthorize("hasAuthority('students:delete')")
     public Student deleteStudent(@RequestBody Student student) {
         students.remove(student);
         return student;
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('students:write')")
+    @PreAuthorize("hasAuthority('students:put')")
     public Student updateStudent(@PathVariable int id,
                                  @RequestBody Student student) {
         return student;
