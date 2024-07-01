@@ -32,7 +32,7 @@ public class Swagger {
                 .version("1.0")
                 .build();
     }
-    @EventListener(ApplicationContext.class)
+    @EventListener(ApplicationReadyEvent.class)
     public void displayUrl(){
         System.out.println("Swagger-ui url: http://localhost:7070/swagger-ui/index.html");
     }
