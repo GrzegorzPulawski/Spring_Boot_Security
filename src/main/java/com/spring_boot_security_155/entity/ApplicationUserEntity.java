@@ -1,29 +1,33 @@
-package com.spring_boot_security_155.dbauth;
+package com.spring_boot_security_155.entity;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-
+import javax.persistence.*;
 import java.util.Collection;
+import java.util.Set;
 
-public class ApplicationUser implements UserDetails {
+@Entity
+@Table(name = "users")
+public class ApplicationUserEntity implements UserDetails {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String password;
     private String userName;
-    private Collection<? extends GrantedAuthority> authorities;
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(
+            name="users_authorities",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "authority_id",referencedColumnName = "id" )
+    )
+    private Set<Authority> authorities;
     private boolean isAccountNonExpired;
     private boolean isAccountNonLocked;
     private boolean isCredentialsNonExpired;
     private boolean isEnabled;
 
-    public ApplicationUser(String password, String userName, Collection<? extends GrantedAuthority> authorities, boolean isAccountNonExpired, boolean isAccountNonLocked, boolean isCredentialsNonExpired, boolean isEnabled) {
-        this.password = password;
-        this.userName = userName;
-        this.authorities = authorities;
-        this.isAccountNonExpired = isAccountNonExpired;
-        this.isAccountNonLocked = isAccountNonLocked;
-        this.isCredentialsNonExpired = isCredentialsNonExpired;
-        this.isEnabled = isEnabled;
-    }
+    public ApplicationUserEntity() {}
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
