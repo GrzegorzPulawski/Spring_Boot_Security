@@ -14,6 +14,7 @@ public class ApplicationUserEntity implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String password;
+    @Column(name = "user_name")
     private String userName;
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
