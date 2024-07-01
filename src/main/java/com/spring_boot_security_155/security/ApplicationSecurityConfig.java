@@ -4,6 +4,7 @@ import com.spring_boot_security_155.dbauth.ApplicationUserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -25,11 +26,16 @@ import static com.spring_boot_security_155.security.ApplicationUserRole.*;
 public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final PasswordEncoder passwordEncoder;
-    private final ApplicationUserService applicationUserService;
+    private final ApplicationUserService userDetailsService;
 
-    public ApplicationSecurityConfig(PasswordEncoder passwordEncoder, ApplicationUserService applicationUserService) {
+    public ApplicationSecurityConfig(PasswordEncoder passwordEncoder,  ApplicationUserService userDetailsService) {
         this.passwordEncoder = passwordEncoder;
-        this.applicationUserService = applicationUserService;
+        this.userDetailsService = userDetailsService;
+    }
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception { // gdy jest problem z prawidłowym wyborem implementacji 'UserDetailsService'
+        auth.userDetailsService(userDetailsService);
     }
 
     @Override
@@ -37,7 +43,7 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .csrf().disable()
                 .authorizeRequests() //każde zadania musi być autoryzowane (prawa dostępu do zasobu)
-                .antMatchers("/", "index.html").permitAll() // co ma być widoczne bez logowania (biała lista)
+                .antMatchers("/", "index.html", "swagger-ui/**").permitAll() // co ma być widoczne bez logowania (biała lista)
                 .antMatchers("/api/**").hasRole(STUDENT.name())
                 .anyRequest() //każde żadanie
                 .authenticated() // musi przejść autentykację (login i hasło)
@@ -69,7 +75,7 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
     public DaoAuthenticationProvider daoAuthenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setPasswordEncoder(passwordEncoder);
-        provider.setUserDetailsService(applicationUserService);
+        provider.setUserDetailsService(userDetailsService);
         return provider;
     }
 //    @Override
