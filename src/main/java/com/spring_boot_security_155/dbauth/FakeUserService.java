@@ -59,7 +59,7 @@ public class FakeUserService implements UserService {
                 ),
                 new ApplicationUser(
                         passwordEncoder.encode("123456"),
-                        "student",
+                        "verbs",
                         HTTP_VERBS.getGrantedAuthorities(),
                         true,
                         true,
