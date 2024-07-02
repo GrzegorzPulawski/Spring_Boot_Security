@@ -1,14 +1,20 @@
 package com.spring_boot_security_155.security;
 
 import com.spring_boot_security_155.dbauth.ApplicationUserService;
+import com.spring_boot_security_155.jwt.JwtConfig;
+import com.spring_boot_security_155.jwt.JwtSecretKey;
+import com.spring_boot_security_155.jwt.JwtTokenVerifier;
+import com.spring_boot_security_155.jwt.JwtUsernameAndPasswordAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import javax.crypto.SecretKey;
 import java.util.concurrent.TimeUnit;
 
 import static com.spring_boot_security_155.security.ApplicationUserRole.*;
@@ -27,48 +34,58 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final PasswordEncoder passwordEncoder;
     private final ApplicationUserService userDetailsService;
+    private final SecretKey secretKey;
+    private final JwtConfig jwtConfig;
 
-    public ApplicationSecurityConfig(PasswordEncoder passwordEncoder,  ApplicationUserService userDetailsService) {
+    public ApplicationSecurityConfig(PasswordEncoder passwordEncoder, ApplicationUserService userDetailsService, SecretKey secretKey, JwtConfig jwtConfig) {
         this.passwordEncoder = passwordEncoder;
         this.userDetailsService = userDetailsService;
+        this.secretKey = secretKey;
+        this.jwtConfig = jwtConfig;
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception { // gdy jest problem z prawidłowym wyborem implementacji 'UserDetailsService'
         auth.userDetailsService(userDetailsService);
+        auth.authenticationProvider(daoAuthenticationProvider());
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), secretKey, jwtConfig))
+                .addFilterAfter(new JwtTokenVerifier(secretKey, jwtConfig), JwtUsernameAndPasswordAuthenticationFilter.class)
                 .authorizeRequests() //każde zadania musi być autoryzowane (prawa dostępu do zasobu)
                 .antMatchers("/", "index.html", "swagger-ui/**").permitAll() // co ma być widoczne bez logowania (biała lista)
                 .antMatchers("/api/**").hasRole(STUDENT.name())
                 .anyRequest() //każde żadanie
-                .authenticated() // musi przejść autentykację (login i hasło)
-                .and()
-//                .httpBasic(); // używanie podstawowej autnetykacji czyli mechanizmu BasicAuth
-                .formLogin()
-                    .loginPage("/login")
-                    .passwordParameter("password2")
-                    .usernameParameter("username2")
-                    .defaultSuccessUrl("/management/api/v1/students", true)
-                    .permitAll()
-                .and()
-                .rememberMe()
-                    .tokenValiditySeconds((int)TimeUnit.DAYS.toSeconds(21))
-                    .rememberMeParameter("pamietaj-mnie")
-                    .key("jakis_strasznie_trudny_klucz")
-                .and()
-                .logout()
-                    .logoutUrl("/logout")
-                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
-                    .clearAuthentication(true)
-                    .invalidateHttpSession(true)
-                    .deleteCookies("JSESSIONID", "remember-me")
-                    .logoutSuccessUrl("/login")
-        ;
+                .authenticated(); // musi przejść autentykację (login i hasło)
+//                .and()
+////                .httpBasic(); // używanie podstawowej autnetykacji czyli mechanizmu BasicAuth
+//                .formLogin()
+//                    .loginPage("/login")
+//                    .passwordParameter("password2")
+//                    .usernameParameter("username2")
+//                    .defaultSuccessUrl("/management/api/v1/students", true)
+//                    .permitAll()
+//                .and()
+//                .rememberMe()
+//                    .tokenValiditySeconds((int)TimeUnit.DAYS.toSeconds(21))
+//                    .rememberMeParameter("pamietaj-mnie")
+//                    .key("jakis_strasznie_trudny_klucz")
+//                .and()
+//                .logout()
+//                    .logoutUrl("/logout")
+//                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
+//                    .clearAuthentication(true)
+//                    .invalidateHttpSession(true)
+//                    .deleteCookies("JSESSIONID", "remember-me")
+//                    .logoutSuccessUrl("/login")
+//        ;
     }
 
     @Bean
