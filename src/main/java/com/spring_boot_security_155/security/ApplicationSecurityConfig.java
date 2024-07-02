@@ -2,12 +2,10 @@ package com.spring_boot_security_155.security;
 
 import com.spring_boot_security_155.dbauth.ApplicationUserService;
 import com.spring_boot_security_155.jwt.JwtConfig;
-import com.spring_boot_security_155.jwt.JwtSecretKey;
 import com.spring_boot_security_155.jwt.JwtTokenVerifier;
 import com.spring_boot_security_155.jwt.JwtUsernameAndPasswordAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -15,15 +13,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import javax.crypto.SecretKey;
-import java.util.concurrent.TimeUnit;
 
 import static com.spring_boot_security_155.security.ApplicationUserRole.*;
 
@@ -33,20 +25,20 @@ import static com.spring_boot_security_155.security.ApplicationUserRole.*;
 public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final PasswordEncoder passwordEncoder;
-    private final ApplicationUserService userDetailsService;
+    private final ApplicationUserService applicationUserService;
     private final SecretKey secretKey;
     private final JwtConfig jwtConfig;
 
-    public ApplicationSecurityConfig(PasswordEncoder passwordEncoder, ApplicationUserService userDetailsService, SecretKey secretKey, JwtConfig jwtConfig) {
+    public ApplicationSecurityConfig(PasswordEncoder passwordEncoder, ApplicationUserService applicationUserService, SecretKey secretKey, JwtConfig jwtConfig) {
         this.passwordEncoder = passwordEncoder;
-        this.userDetailsService = userDetailsService;
+        this.applicationUserService = applicationUserService;
         this.secretKey = secretKey;
         this.jwtConfig = jwtConfig;
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception { // gdy jest problem z prawidłowym wyborem implementacji 'UserDetailsService'
-        auth.userDetailsService(userDetailsService);
+        auth.userDetailsService(applicationUserService);
         auth.authenticationProvider(daoAuthenticationProvider());
     }
 
@@ -92,7 +84,7 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
     public DaoAuthenticationProvider daoAuthenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setPasswordEncoder(passwordEncoder);
-        provider.setUserDetailsService(userDetailsService);
+        provider.setUserDetailsService(applicationUserService);
         return provider;
     }
 //    @Override
