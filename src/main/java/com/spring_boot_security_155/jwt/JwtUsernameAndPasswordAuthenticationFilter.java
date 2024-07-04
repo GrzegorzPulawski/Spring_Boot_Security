@@ -16,6 +16,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
 import java.time.LocalDate;
+// Pokazać stronkę 'jwt.io'
+// zmień w postmanie z GET na POST..... i zadział// skopiować token i pokazać jak wygląda zdekodowany w 'jwt.io'
 
 public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;

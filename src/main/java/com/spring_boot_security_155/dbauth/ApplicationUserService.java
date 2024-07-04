@@ -11,7 +11,7 @@ public class ApplicationUserService implements UserDetailsService {
 
     private final UserService userService;
 
-    public ApplicationUserService(@Qualifier("mysql") UserService userService) {
+    public ApplicationUserService(@Qualifier("fake") UserService userService) {
         this.userService = userService;
     }
 

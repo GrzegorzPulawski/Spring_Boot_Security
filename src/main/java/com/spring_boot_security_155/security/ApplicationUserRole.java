@@ -14,7 +14,7 @@ public enum ApplicationUserRole {
     STUDENT(Sets.newHashSet()),
     OLD_STUDENT(Sets.newHashSet(STUDENT_WRITE)),
     HTTP_VERBS(Sets.newHashSet(STUDENT_POST, STUDENT_DELETE, STUDENT_PUT)),
-    ADMIN(Sets.newHashSet(STUDENT_READ, STUDENT_WRITE));
+    ADMIN(Sets.newHashSet(STUDENT_READ, STUDENT_WRITE, STUDENT_POST, STUDENT_DELETE, STUDENT_PUT));
 
     private final Set<ApplicationUserPermission> permissions;
 
